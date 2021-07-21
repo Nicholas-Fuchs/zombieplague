@@ -132,12 +132,15 @@ function ScoreBoardManager:FillTable(Table, TitleText, TitleFont, Team)
     Table:AddComponent(ScoreBoardManager:CreateLine(4, ScrWidth - (self.CompPosX * 2), 2, TeamColor), 0)
 
     for k, ply in pairs(team.GetPlayers(Team)) do
-        if IsValid(ply) then
+        if ply && IsValid(ply) then
             local NewPlayerLine = ScoreBoardManager:CreatePlayerLine(
-                function() return ply:Name() end,
-                function() return ply:Frags() end,
-                function() return ply:Deaths() end,
+                function() return (ply && IsValid(ply)) and ply:Name() or "" end,
+                function() return (ply && IsValid(ply)) and ply:Frags() or "" end,
+                function() return (ply && IsValid(ply)) and ply:Deaths() or "" end,
                 function()
+                    if !ply || !IsValid(ply) then
+                        return ""
+                    end
                     if ply:Team() == TEAM_SPECTATOR then
                         return Dictionary:GetPhrase("ScoreBoardStatusSpectating")
                     end
@@ -146,7 +149,7 @@ function ScoreBoardManager:FillTable(Table, TitleText, TitleFont, Team)
                     end
                     return Dictionary:GetPhrase("ScoreBoardStatusDead")
                 end,
-                function() return ply:Ping() end,
+                function() return (ply && IsValid(ply)) and ply:Ping() or "" end,
                 ply,
                 "DermaDefault",
                 TeamColor
